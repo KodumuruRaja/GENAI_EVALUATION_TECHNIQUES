@@ -1,78 +1,134 @@
-# Generative AI Evaluation Techniques
+# ✨ Generative AI Evaluation Techniques
 
-This repository contains standalone Python examples for evaluating retrieval-augmented generation (RAG) workflows. The examples load a PDF, split it into chunks, index the chunks in a local Chroma vector store, and then calculate an evaluation metric or send traces and evaluations to an observability platform.
+<div align="center">
+  <img src="https://img.shields.io/badge/AI-Evaluation-8A2BE2?style=for-the-badge&logo=OpenAI&logoColor=white" alt="AI Evaluation" />
+  <img src="https://img.shields.io/badge/RAG-Ready-00C2A8?style=for-the-badge" alt="RAG Ready" />
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+" />
+</div>
 
-## Examples
+<p align="center">
+  <strong>Standalone Python examples for evaluating Retrieval-Augmented Generation (RAG) workflows</strong>
+</p>
 
-| Script | What it demonstrates |
-| --- | --- |
-| `BLEU_Score.py` | BLEU-1 through BLEU-4, comparing retrieved text with a reference answer |
-| `Rouge_Score.py` | ROUGE-1, ROUGE-2, and ROUGE-L, comparing retrieved text with a reference answer |
-| `Context_Precision.py` | Context precision using an LLM judge to score retrieved chunks |
-| `Context_Recall.py` | Context recall using an LLM judge to check reference facts against retrieved context |
-| `Hit_rate.py` | Hit rate at K using an LLM judge |
-| `MRR.py` | Mean reciprocal rank using an LLM judge |
-| `Faithfulness_and_Answer_relevance.py` | Custom LLM-as-a-judge examples for faithfulness and answer relevance |
-| `DeepEval.py` | DeepEval faithfulness and answer relevancy metrics |
-| `Langsmith.py` | LangSmith dataset, experiment, and correctness evaluator |
-| `Langfuse.py` | Langfuse tracing and correctness scoring |
-| `TruLens.py` | TruLens context relevance, groundedness, and answer relevance metrics |
+This repository contains a curated set of Python scripts for measuring how well a retrieval pipeline and answer-generation system performs. Each example focuses on a different evaluation metric and can be run independently.
 
-The examples are independent scripts, not a single application. They use a sample question and reference answer defined in the scripts; update these values to evaluate your own data.
+## 🌟 What this repo includes
 
-## Requirements
+- 📚 Retrieval quality evaluation for RAG systems
+- 🧠 LLM-as-a-judge patterns for semantic evaluation
+- 📊 Classic metrics such as BLEU and ROUGE
+- 🔍 Ranking metrics like Hit Rate and MRR
+- 🛰️ Observability integrations with LangSmith, Langfuse, and TruLens
+- 🧪 Standalone scripts designed for experimentation and learning
+
+## 🧩 Example scripts
+
+| Script | Metric / Focus | What it demonstrates |
+| --- | --- | --- |
+| `BLEU_Score.py` | BLEU-1 to BLEU-4 | Compares retrieved text with a reference answer |
+| `Rouge_Score.py` | ROUGE-1, ROUGE-2, ROUGE-L | Measures overlap between retrieved text and a reference answer |
+| `Context_Precision.py` | Context Precision | Uses an LLM judge to score retrieved chunks |
+| `Context_Recall.py` | Context Recall | Checks whether retrieved context covers reference facts |
+| `Hit_rate.py` | Hit Rate @ K | Evaluates whether relevant chunks appear in top results |
+| `MRR.py` | Mean Reciprocal Rank | Measures the rank of the first relevant result |
+| `Faithfulness_and_Answer_relevance.py` | Faithfulness + Answer Relevance | Custom LLM-as-a-judge evaluation patterns |
+| `DeepEval.py` | DeepEval metrics | Faithfulness and answer relevance scoring |
+| `Langsmith.py` | LangSmith evaluation | Dataset, tracing, and correctness scoring |
+| `Langfuse.py` | Langfuse tracing | Experiment tracking and correctness evaluation |
+| `TruLens.py` | TruLens metrics | Context relevance, groundedness, and answer relevance |
+
+## 🛠️ Repository purpose
+
+The examples are intentionally independent scripts rather than a single application. Each script contains a sample question and reference answer you can customize for your own dataset and use case.
+
+> Update the question, reference answer, and PDF path in each script to evaluate your own retrieval pipeline.
+
+## ✅ Requirements
+
+Before running the scripts, make sure you have:
 
 - Python 3.10 or newer
 - An OpenAI API key
 - A PDF file to evaluate
-- Additional service credentials for the LangSmith and Langfuse examples
+- Additional credentials for LangSmith and/or Langfuse examples
 
-Install the packages used across the examples:
+### Install dependencies
 
 ```bash
-python -m pip install langchain-community langchain-text-splitters langchain-chroma langchain-openai langchain-core pypdf chromadb python-dotenv pandas nltk rouge-score deepeval langsmith langfuse trulens-core trulens-apps-langchain trulens-providers-openai
+python -m pip install \
+  langchain-community \
+  langchain-text-splitters \
+  langchain-chroma \
+  langchain-openai \
+  langchain-core \
+  pypdf \
+  chromadb \
+  python-dotenv \
+  pandas \
+  nltk \
+  rouge-score \
+  deepeval \
+  langsmith \
+  langfuse \
+  trulens
 ```
 
-## Configuration
+## ⚙️ Configuration
 
-1. Place a PDF file somewhere accessible on your computer.
-2. In the script you want to run, update the PDF path in the `pdf_loader(...)` call. The current scripts refer to a machine-specific path that is not included in this repository.
-3. Create a `.env` file in the repository root with your OpenAI key:
+1. Place a PDF file somewhere accessible on your machine.
+2. In the script you want to run, update the `pdf_loader(...)` path. The current files reference a machine-specific path that is not included in this repository.
+3. Create a `.env` file in the project root with your OpenAI key:
 
-   ```dotenv
-   OPENAI_API_KEY=your-openai-api-key
-   ```
+```dotenv
+OPENAI_API_KEY=your-openai-api-key
+```
 
-4. For `Langsmith.py`, configure a LangSmith API key as well:
+4. For `Langsmith.py`, also add your LangSmith key:
 
-   ```dotenv
-   LANGSMITH_API_KEY=your-langsmith-api-key
-   ```
+```dotenv
+LANGSMITH_API_KEY=your-langsmith-api-key
+```
 
-5. For `Langfuse.py`, configure your Langfuse project keys. `LANGFUSE_HOST` is optional and defaults to the Langfuse cloud URL:
+5. For `Langfuse.py`, configure your Langfuse credentials:
 
-   ```dotenv
-   LANGFUSE_PUBLIC_KEY=your-langfuse-public-key
-   LANGFUSE_SECRET_KEY=your-langfuse-secret-key
-   LANGFUSE_HOST=https://cloud.langfuse.com
-   ```
+```dotenv
+LANGFUSE_PUBLIC_KEY=your-langfuse-public-key
+LANGFUSE_SECRET_KEY=your-langfuse-secret-key
+LANGFUSE_HOST=https://cloud.langfuse.com
+```
 
-Do not commit `.env` files or real API keys.
+> Never commit `.env` files or real API keys to version control.
 
-## Run an example
+## ▶️ Run an example
 
-From the repository root, run one script at a time:
+From the repository root, run any script individually:
 
 ```bash
 python Context_Precision.py
 ```
 
-Replace the filename with any example from the table above. The scripts print scores and intermediate results to the terminal. The LangSmith and Langfuse examples also send experiment or trace data to their configured services. The scripts create or use a local `chroma_db` directory for the vector store.
+Replace the filename with a script from the table above. Each script prints scores and intermediate results to the terminal. The LangSmith and Langfuse examples also report experiments or traces to their respective platforms.
 
-`BLEU_Score.py` may download the NLTK `punkt_tab` tokenizer data the first time it runs.
+## 📝 Notes
 
-## Notes
+- The PDF, chunk size, chunk overlap, retrieval count, query, and reference answer are configured directly inside each script.
+- Several metrics use an LLM as a judge, so results depend on the model, prompt, and evaluation data.
+- Treat scores as useful evaluation signals rather than absolute truths.
+- BLEU and ROUGE examples compare retrieved text with reference text and do not directly evaluate the generated answer.
 
-- The PDF, chunk size, chunk overlap, retrieval count, query, and reference answer are configured directly in each script.
-- Several metrics use an LLM as a judge, so results depend on the model, prompt, and data. Treat scores as evaluation signals, not guarantees of correctness.
-- The BLEU and ROUGE examples compare retrieved text with reference text; they do not evaluate the generated answer.
+## 🚀 Why use these evaluations?
+
+When building RAG systems, it is important to measure more than just whether the model can answer a question. These examples help you assess:
+
+- whether the retrieved context is relevant
+- whether the answer is grounded in the source material
+- whether the correct evidence appears early in retrieval results
+- how different evaluation methods behave for your domain and dataset
+
+If you are experimenting with RAG and LLM evaluation, this repository is a practical starting point for understanding commonly used metrics and tooling.
+
+---
+
+<p align="center">
+  Built for <strong>Generative AI + Evaluation</strong> workflows
+</p>
